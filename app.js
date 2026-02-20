@@ -546,6 +546,7 @@ function buildEntryFromForm(){
     id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)),
     date: selectedDate,
     createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     fields: { num, missao, codigo, voo, inicio, tempo, nome, ua, ciclos, nbat, cargaIni, cargaFim, obs }
   };
 }
@@ -923,17 +924,20 @@ function copyOne(id){
 }
 
 function deleteOne(id){
-  const i = entries.findIndex(x => x.id === id);
-  if (i < 0) return;
+  const e = entries.find(x => x.id === id);
+  if (!e) return;
   if (!confirm("Excluir este voo do histórico?")) return;
 
-  entries.splice(i, 1);
+  e.deleted = true;
+  e.deletedAt = new Date().toISOString();
+  e.updatedAt = e.deletedAt;
+
   saveAll();
   renderHistory();
   showMsg("Voo excluído!");
 
   // dica rápida para sincronização
-  setSyncStatus("Voo excluído localmente. Clique em 'Enviar para planilha' para sincronizar.");
+  setSyncStatus("Voo excluído. Clique em 'Enviar para planilha' para sincronizar.");
 }
 
 
@@ -1029,6 +1033,8 @@ function mergeUniqueStrings(a, b){
 function mergeEntriesById(localList, remoteList){
   const map = new Map();
 
+  const stamp = (e) => String((e && (e.updatedAt || e.deletedAt || e.createdAt)) || "");
+
   const put = (e) => {
     if (!e || typeof e !== "object") return;
     const id = String(e.id || "");
@@ -1042,8 +1048,8 @@ function mergeEntriesById(localList, remoteList){
       map.set(id, e);
       return;
     }
-    const a = String(prev.createdAt || "");
-    const b = String(e.createdAt || "");
+    const a = stamp(prev);
+    const b = stamp(e);
     if (b && (!a || b > a)) map.set(id, e);
   };
 
@@ -1411,6 +1417,7 @@ function saveEdit(){
 
   if (nf.ua && !uas.includes(nf.ua)) uas.push(nf.ua);
 
+  if (typeof entry === "object" && entry) entry.updatedAt = new Date().toISOString();
   saveAll();
   ensureUASelects();
   closeModal();

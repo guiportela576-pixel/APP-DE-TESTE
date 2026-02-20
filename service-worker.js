@@ -7,12 +7,12 @@ self.addEventListener("install", (event) => {
       cache.addAll([
         "./",
         "./index.html",
-        "./style.css?v=35",
+        "./style.css?v=36",
         "./state.js?v=1",
         "./utils.js?v=1",
         "./db.js?v=1",
         "./tests.js?v=1",
-        "./app.js?v=35",
+        "./app.js?v=36",
         "./manifest.json",
         "./icon.png"
       ])
