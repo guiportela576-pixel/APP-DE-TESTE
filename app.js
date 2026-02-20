@@ -1355,21 +1355,6 @@ function openEditModal(id){
   ensureUASelects();
   buildPickers();
 
-  // ===== IndexedDB: carrega voos (com migração automática do localStorage) =====
-  try{
-    if (window.RV_IDB && typeof RV_IDB.migrateFlightReportsFromLocalStorage === "function"){
-      entries = await RV_IDB.migrateFlightReportsFromLocalStorage();
-    } else {
-      // fallback
-      entries = JSON.parse(localStorage.getItem("flightReports")) || [];
-      if (!Array.isArray(entries)) entries = [];
-    }
-    if (window.RV_STATE) RV_STATE.entriesLoaded = true;
-  }catch(e){
-    entries = JSON.parse(localStorage.getItem("flightReports")) || [];
-    if (!Array.isArray(entries)) entries = [];
-  }
-
   const f = e.fields || {};
   document.getElementById("modalSub").textContent =
     `Data: ${e.date || "-"} | Criado: ${(e.createdAt || "").slice(0,16).replace('T',' ')}`;
@@ -1469,6 +1454,21 @@ function bindDotDecimal(id){
   ensureNameSelects();
   ensureCodeSelects();
   buildPickers();
+
+
+  // ===== IndexedDB: carrega voos (com migração automática do localStorage) =====
+  try{
+    if (window.RV_IDB && typeof RV_IDB.migrateFlightReportsFromLocalStorage === "function"){
+      entries = await RV_IDB.migrateFlightReportsFromLocalStorage();
+    } else {
+      entries = JSON.parse(localStorage.getItem("flightReports")) || [];
+    }
+    if (!Array.isArray(entries)) entries = [];
+  } catch(e){
+    entries = JSON.parse(localStorage.getItem("flightReports")) || [];
+    if (!Array.isArray(entries)) entries = [];
+  }
+
 
   const dEl = document.getElementById("f_date");
   if (dEl){
