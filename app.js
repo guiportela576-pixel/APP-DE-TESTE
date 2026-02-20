@@ -1,5 +1,5 @@
 // Relatório de Voo (PWA) - armazenamento local
-const APP_VERSION = "v37";
+const APP_VERSION = "v38";
 const VERSION_HISTORY = [
   "1.2.3 - Códigos de operação pré-carregados (não sobrescreve dados existentes)",
   "1.2.2 - Correção: botões/tabs voltaram a funcionar (erro JS) + VOO decimal no teclado",
